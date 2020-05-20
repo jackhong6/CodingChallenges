@@ -88,7 +88,9 @@ def print_distance_table(dist_table):
 
 
 def main():
-    print_distance_table(calculate_dist_table_2(3, 10, 12, 5))
+    consecutive_distances = input("Enter the consecutive distances between cities (comma separated): ").split(",")
+    consecutive_distances = [int(d) for d in consecutive_distances]
+    print_distance_table(calculate_dist_table_2(*consecutive_distances))
 
 
 if __name__ == "__main__":
