@@ -23,29 +23,59 @@
 #       30 27 17 5 0
 
 
-def calculate_dist_table1(d1, d2, d3, d4):
+def calculate_dist_table_1(d1, d2, d3, d4):
     """A simple first solution that hard codes the formula for each distance.
     This is efficient as it only requires performing a few additions.
     However, it is not generic and cannot easily be used to solve similar problems, such as when more cities are added.
     """
-    return [[0, d1, d1+d2, d1+d2+d3, d1+d2+d3+d4],
-            [d1, 0, d2, d2+d3, d2+d3+d4],
-            [d1+d2, d2, 0, d3, d3+d4],
-            [d1+d2+d3, d2+d3, d3, 0, d4],
-            [d1+d2+d3+d4, d2+d3+d4, d3+d4, d4, 0]]
+    return [[0, d1, d1 + d2, d1 + d2 + d3, d1 + d2 + d3 + d4],
+            [d1, 0, d2, d2 + d3, d2 + d3 + d4],
+            [d1 + d2, d2, 0, d3, d3 + d4],
+            [d1 + d2 + d3, d2 + d3, d3, 0, d4],
+            [d1 + d2 + d3 + d4, d2 + d3 + d4, d3 + d4, d4, 0]]
 
 
-def calculate_dist_table2(*args):
+def calculate_dist_table_2(*args):
     """A second solution using loops inspired by the patterns and symmetry observed in the first solution.
-    This is more generic than the first solution because it allows a variable number of cities.
+    This is more generic than the first solution because it allows for a variable number of cities.
     """
     table_size = len(args) + 1
-    dist_table = [table_size*[0] for _ in range(table_size)]  # create a matrix of zeros
+    dist_table = [table_size * [0] for _ in range(table_size)]  # create a matrix of zeros
 
     # loop through every pair of cities and update dist_table
     for i in range(table_size):
         for j in range(i+1, table_size):
             dist_table[i][j] = dist_table[j][i] = sum(args[i:j])
+    return dist_table
+
+
+def calculate_dist_table_3(*args):
+    """A third solution that is as general and efficient as solution 2. This approach uses the idea that as we move to
+    the ith city, the distances to the cities before the ith city increases by args[i] and the distances to the rest
+    of the cities decreases by args[i].
+    """
+    dist_table = [[sum(args[:i]) for i in range(len(args)+1)]]  # calculate the first row of dist_table
+
+    for i in range(len(args)):
+        # for each subsequent row, the distances to each city before the ith city increases by args[i] while
+        # the distances to each city after the ith city decreases by args[i]
+        dist_table.append([elem + args[i] for elem in dist_table[i][:i+1]]
+                          + [elem - args[i] for elem in dist_table[i][i+1:]])
+
+    return dist_table
+
+
+def calculate_dist_table_4(*args):
+    """A fourth solution similar to solutions 2 and 3. This uses the idea that the distance between city-i and city-j is
+    the distance from city-0 to city-j minus the distance from city-0 to city-i.
+    """
+    table_size = len(args) + 1
+    dist_from_start = [sum(args[:i]) for i in range(0, len(args)+1)]
+    dist_table = []
+
+    # loop through every pair of cities and update dist_table
+    for i in range(table_size):
+        dist_table.append([abs(d - dist_from_start[i]) for d in dist_from_start])
     return dist_table
 
 
@@ -58,7 +88,7 @@ def print_distance_table(dist_table):
 
 
 def main():
-    print_distance_table(calculate_dist_table2(3, 10, 12, 5))
+    print_distance_table(calculate_dist_table_2(3, 10, 12, 5))
 
 
 if __name__ == "__main__":
